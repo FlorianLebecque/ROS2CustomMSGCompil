@@ -1,0 +1,1051 @@
+//
+// https://developers.google.com/protocol-buffers/docs/overview
+//
+// Update C++ files: protoc VMX4Protocol.proto --cpp_out=.
+//
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+
+//-----------------------------------------------------------------------------
+package VallonMessage.VMX4;
+
+
+//-----------------------------------------------------------------------------
+message Header
+{
+    // A message starts with this header which specifies the message id
+    // and the size of the message. The header is always 10 bytes long.
+
+    enum Id {
+        Unknown                     = 0;
+
+        // Ids before 10 are reserved for basic messages from CommonProtocol.proto
+
+        // System status & feature messages
+        SystemStatusRequest         = 10;
+        SystemStatusResponse        = 11;
+        SystemFeaturesRequest       = 12;
+        SystemFeaturesResponse      = 13;
+
+
+        MDMESDataRequest             = 30;
+        MDMESDataResponse            = 31;
+        AutoFrequencySearchRequest   = 32;
+        AutoFrequencySearchResponse  = 33;
+        AutoSoilCompensationRequest  = 34;
+        AutoSoilCompensationResponse = 35;
+        CoilDataRequest              = 36;
+        CoilDataResponse             = 37;
+        MDBINDataRequest             = 38;
+        MDBINDataResponse            = 39;
+
+
+        // GPS messages
+        GpsDataInfoRequest      = 60;
+        GpsDataInfoResponse     = 61;
+        GpsDataRequest          = 62;
+        GpsDataResponse         = 63;
+        GpsClearDataRequest     = 64;
+        GpsClearDataResponse    = 65;
+        GpsStringRequest        = 66;
+        GpsStringResponse       = 67;
+        GpsStartStopDataTransferRequest  = 68;
+        GpsStartStopDataTransferResponse = 69;
+
+        // Authentication messages
+        PairingRequest	  = 80;
+        PairingResponse	  = 81;
+        AuthenticationRequest	  = 82;
+        AuthenticationResponse	  = 83;
+        UIFeaturesRequest	  = 84;
+        UIFeaturesResponse	  = 85;
+
+        // Metal Discrimination
+        MetalDiscriminationRequest  = 90;
+        MetalDiscriminationResponse = 91;
+
+        // IMU Sensor
+        IMUSensorRequest  = 92;
+        IMUSensorResponse = 93;
+        IMURotationStreamRequest  = 94;
+        IMURotationStreamResponse = 95;
+        IMUDataStreamRequest  = 96;
+        IMUDataStreamResponse = 97;
+
+        //ProductionData
+        ProductionDataRequest  = 100;
+        ProductionDataResponse = 101;
+        PulseGeneratorRequest  = 102;
+        PulseGeneratorResponse = 103;
+
+        //CoilCalibration
+        CoilCalibrationRequest = 110;
+        CoilCalibrationResponse =111;
+
+        //Device sensitivity configuration
+        SensitivityConfigurationRequest      = 112;
+        SensitivityConfigurationResponse     = 113;
+
+        // Hardware tests
+        HardwareTestRequest  = 114;
+        HardwareTestResponse = 115;
+
+        //Factory tettingsR
+        FactorySettingsRequest = 116;
+        FactorySettingsResponse =117;
+
+        //Diagnostic Adc infos
+        DiagnosticAdcRequest =  118;
+        DiagnosticAdcResponse = 119;
+
+        // Export config files
+        ExportConfigRequest =  120;
+        ExportConfigResponse = 121;
+
+        // Export syslog files
+        ExportSyslogRequest =  122;
+        ExportSyslogResponse = 123;
+
+        // Battery Configuration
+        BatteryConfigRequest =  124;
+        BatteryConfigResponse = 125;
+
+        // DetectorActiveModes Configuration
+        DetectorActiveModesConfigRequest = 126;
+        DetectorActiveModesConfigResponse = 127;
+
+	ResetSettingsRequest = 128;
+        ResetSettingsResponse = 129;
+
+        DataServerRequest = 130;
+        DataServerResponse = 131;
+
+        LedColorRequest = 140;
+        LedColorResponse = 141;
+    }
+
+    required fixed32 id   = 1;
+    required fixed32 size = 2;
+}
+
+
+
+//-----------------------------------------------------------------------------
+message SystemStatus
+{
+    message Request {}
+
+    message Response {
+        optional string serial              = 1;
+        optional string software_version    = 2;
+        optional string hardware_version    = 3;
+        optional string display_version     = 4;
+        optional string md_version          = 5;
+        optional string gpr_version         = 6;
+        optional int32 battery_load         = 7;
+        optional int32 temperature          = 8;
+        optional int32 alarm                = 9;  // integer value of alarm in interval [0,10000]
+        optional int32 coilstatus           = 10; // 0 - ok; 1 - no coil; 2 - coil id unknown
+        optional int32 flash_total          = 11; // total Kbytes in /media/app-data
+        optional int32 flash_free           = 12; // free Kbytes in /media/app-data
+        optional int32 gpslog_max           = 13; // max gpslog size in Kbytes
+        optional int32 gpslog_size          = 14; // current gpslog size in Kbytes
+        optional int32 gpsmarker_max        = 15; // max gpslog size in Kbytes
+        optional int32 gpsmarker_size       = 16; // current gpslog size in Kbytes
+        optional string device_name         = 17;
+        optional int32 DiodeADC2Temperature = 18;
+        optional bool overdriven            = 19;
+        optional int32 IDADC                = 20;
+}
+}
+
+//-----------------------------------------------------------------------------
+message SystemFeatures
+{
+    enum KEvent {
+        SetupPressed = 1;
+        SetupLongPressed = 2;
+        SetupLongReleased = 3;
+        Plus = 4;
+        Minus = 5;
+        CPressed = 6;
+        CLongPressed = 7;
+        CLongReleased = 8;
+        CDoubleClick = 9;
+        PowerPressed = 10;
+        PowerLongPressed = 11;
+        PowerLongReleased = 12;
+        CPlusPressed = 13;
+        CPlusReleased = 14;
+        CMinusPressed = 15;
+        CMinusReleased = 16;
+        ClongPlusPressed = 17;
+        ClongMinusPressed = 18;
+        PlusRepeatingStart = 19;
+        PlusRepeating = 20;
+        PlusRepeatingEnd = 21;
+        MinusRepeatingStart = 22;
+        MinusRepeating = 23;
+        MinusRepeatingEnd = 25;
+    }
+
+    enum SModeID {
+        Standard = 1;
+        Graphite = 2;
+        Highpower = 3;
+        ObjectDiscrimination = 4;
+        ObjectSuppression = 5;
+    }
+
+    message Request {
+        optional bool gps       = 1;
+        optional bool bluetooth = 2;
+        optional bool mineral   = 3; // false - normal mode, true - mineral mode
+        optional uint32 smode  = 4;
+        optional uint32 sensitivity = 5;
+        optional float mineralalpha = 6; // in mineral mode only
+        optional uint32 mdfrequency = 7; // frequency index 0..49
+        optional uint32 volume      = 8; // volume of MD in percent
+        optional bool keylock       = 9; // true - on, false - off
+        optional bool gpsHide          = 14;
+        optional uint32 gpsSampleRate  = 15;
+        optional float gpsHdop         = 16;
+        optional string ledBrightnessBehaviour = 17;
+        optional uint32 irLEDBrightness  = 18;
+        optional string irLEDBehaviour   = 19;
+        optional string headsetBehaviour = 20;
+        optional bool usePairing         = 21;
+        optional string gpsDataFormat    = 22;
+        optional bool dynamic            = 23;
+        optional bool compensate         = 24;
+        optional uint32 vmv_id           = 25; // id of the device in VMV bundle
+        optional uint32 data_interval    = 26; // Sets MD timer interval in [ms]
+	optional bool metalDiscrimination = 27;
+        optional KEvent KeyEvent          = 28;
+        optional bool EOLtest             = 29;
+	optional uint32 coilDelayOffset   = 30;
+        optional uint32 smode_id          = 31; // smode with fixed mode identifiers.
+        optional bool UXODevice           = 32;
+        optional bool wlan                = 33;
+        optional string datetime          = 34;
+        optional bool FerromagMetals      = 35;
+        optional string language	  = 36;
+    }
+
+    message Response {
+        optional bool gps       = 1;
+        optional bool bluetooth = 2;
+        optional bool mineral   = 3;
+        optional uint32 smode  = 4;
+        optional uint32 sensitivity = 5;
+        optional float mineralalpha = 6;
+        optional uint32 mdfrequency = 7;
+        optional uint32 volume      = 8;
+        optional bool keylock       = 9;
+        optional bool gpsHide          = 14;
+        optional uint32 gpsSampleRate  = 15;
+        optional float gpsHdop         = 16;
+        optional string ledBrightnessBehaviour = 17;
+        optional uint32 irLEDBrightness  = 18;
+        optional string irLEDBehaviour   = 19;
+        optional string headsetBehaviour = 20;
+        optional bool usePairing         = 21;
+        optional string gpsDataFormat    = 22;
+        optional bool dynamic            = 23;
+        optional uint32 vmv_id           = 25; // id of the device in VMV bundle
+        optional uint32 data_interval    = 26; // timer interval in [ms]
+	optional bool metalDiscrimination = 27;
+        optional KEvent KeyEvent          = 28;
+        optional bool EOLtest             = 29;
+        optional uint32 coilDelayOffset   = 30;
+        optional uint32 smode_id          = 31;
+        optional bool UXODevice           = 32;
+        optional bool wlan                = 33;
+        optional string datetime          = 34;
+        optional bool FerromagMetals      = 35;
+        optional string language	  = 36;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message MDMESData
+{
+    enum Status {
+        Ok            = 0;
+        FatalElectric = 1;
+        BatteryAlarm  = 2;
+        BatteryWarn   = 3;
+        ShortCircuit  = 4;
+        NoCoil        = 5;
+        CoilUnknown   = 6;
+        PulseAdcError = 7;
+    }
+
+    message Request {
+        optional bool receive   = 1;  // Datastream: true - on; false - off
+        optional bool timestamp = 2;  // true, if timestamp should be returned
+    }
+
+    message Response {
+        required double raw1  = 1;
+        required double raw2  = 2;
+        required double raw3  = 3;
+        required double raw4  = 4;
+        required bool mineral = 5; // false - normal mode, true - mineral mode
+        optional bool timestamp = 6;  // true, if timestamp should be returned
+        optional Status status = 7;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message MDBINData
+{
+    enum RequestMode {
+        Subscribe   = 1;
+        Unsubscribe = 2;
+        Single      = 3;   // Single data request
+    }
+
+    enum Status {
+        Ok            = 0;
+        FatalElectric = 1;
+        BatteryAlarm  = 2;
+        BatteryWarn   = 3;
+        ShortCircuit  = 4;
+        NoCoil        = 5;
+        CoilUnknown   = 6;
+        PulseAdcError = 7;
+    }
+
+    message Request {
+        required RequestMode mode = 1;
+        required uint32 nchannels = 2; // number of channels (elements) in data
+    }
+
+    message Response {
+        required int32 alarm   = 1;
+        required int32 object  = 2;
+        optional Status status = 3;
+        repeated int32 data    = 4;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message CoilData
+{
+    message Request {
+        optional uint32 id = 1;
+        optional uint32 serial = 2;
+        optional uint32 date = 3;
+        optional uint32 time = 4;
+    }
+
+    message Response {
+        required uint32 id = 1;
+        required uint32 serial = 2;
+        required uint32 date = 3;
+        required uint32 time = 4;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+enum ProgressState {
+    Undefined = 0;
+    Started   = 1;
+    Aborted   = 2;
+    Error     = 3;
+    Success   = 4;
+}
+
+
+//-----------------------------------------------------------------------------
+message AutoFrequencySearch
+{
+    enum Command {
+        Start = 0;
+        Abort = 1;
+    }
+
+    message Request {
+        optional Command mode   = 1;
+    }
+
+    message Response {
+        optional ProgressState mode = 1;
+        optional uint32 progress    = 2;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message AutoSoilCompensation
+{
+    enum Command {
+        Start = 0;
+        Abort = 1;
+    }
+
+    message Request {
+        optional Command mode = 1;
+    }
+
+    message Response {
+        optional ProgressState mode = 1;
+        optional uint32 progress    = 2;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+enum GpsDataType
+{
+    Trace  = 0;
+    Marker = 1;
+}
+
+//-----------------------------------------------------------------------------
+message GpsDataInfo
+{
+    message Request
+    {
+        required GpsDataType type = 1;
+    }
+
+    message Response
+    {
+        required GpsDataType type    = 1;
+        required int32 dataLength    = 2;
+        required int32 maxPacketSize = 3;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message GpsData
+{
+    message Request {
+        required GpsDataType type = 1;
+        required int32 dataOffset = 2;
+        required int32 dataLength = 3;
+    }
+
+    message Response {
+        required GpsDataType type = 1;
+        required int32 dataOffset = 2;
+        required int32 dataLength = 3;
+        required bytes data       = 4;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message GpsClearData
+{
+    message Request {}
+    message Response {}
+}
+
+//-----------------------------------------------------------------------------
+message GpsString
+{
+    message Request {}
+
+    message Response {
+        required string data = 1;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message GpsStartStopDataTransfer
+{
+    message Request  {
+        required GpsDataType type = 1;
+        required bool start       = 2;
+    }
+    message Response {
+        required GpsDataType type = 1;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message Pairing
+{
+    enum State {
+        Success   = 1;
+        Failed    = 2;
+        Waiting   = 3;
+    }
+
+    message Request {
+        required string uid = 1;
+    }
+
+    message Response {
+        required State state = 1;
+        optional string uid = 2;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message Authentication
+{
+    enum State {
+        Success   = 1;
+        Failed    = 2;
+    }
+
+    // Login: username, password -> response: state
+    // Logout: username -> response: state
+    // Create: username, password -> response: state
+    // Change (= change password): user, password old, password new -> response: state
+    // Remove: username -> response: state
+    // Load:  -> response: state, users
+    // Reset: username, password, old_password (reset-code) -> response: state
+    enum Command {
+        Login = 1;
+        Logout = 2;
+        Create = 3;
+        Change = 4;
+        Remove = 5;
+        Load = 6;
+        Reset = 7;
+    }
+
+    message Request {
+        required Command command = 1;
+        optional string user = 2;
+        optional string password = 3;
+        optional string old_password = 4;
+    }
+
+    message Response {
+        required Command command = 1;
+        required State state = 2;
+        optional string token = 3;
+        repeated string users = 4;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message UIFeatures
+{
+    enum State {
+        Success   = 1;
+        Failed    = 2;
+    }
+
+    // Load: request: user -> response: all values
+    // Save: request: user, values -> response: all values
+    enum Command {
+        Load = 1;
+        Save = 2;
+    }
+
+    enum Mode {
+        Hidden = 1;
+        Visible = 2;
+        Usable = 3;
+    }
+
+    message Request {
+    	required Command command = 1;
+
+    	optional string user = 3;
+    	optional Mode accessDeviceTab = 4;
+    	optional Mode accessSetupTab = 5;
+    	optional Mode accessGpsTab = 6;
+    	optional Mode accessFirmwareTab = 7;
+    	optional Mode accessAccessConfigTab = 8;
+    	optional Mode accessMetalDiscriminationTab = 9;
+
+    	optional Mode setupBluetooth = 21;
+    	optional Mode setupGps = 22;
+    	optional Mode setupLedBrightness = 23;
+    	optional Mode setupInfraredLedBrightness = 24;
+    	optional Mode setupInfraredLedBehaviour = 25;
+    	optional Mode setupHeadsetBehaviour = 26;
+    	optional Mode setupUsePairing = 27;
+    	optional Mode setupGpsHide = 28;
+	optional Mode setupMetalDiscrimination = 29;
+
+    	optional Mode gpsTrackDensity = 31;
+    	optional Mode gpsTraceDataDl = 32;
+    	optional Mode gpsTraceMarkerDl = 33;
+    	optional Mode gpsTraceAndMarkerDl = 34;
+    	optional Mode gpsClearData = 35;
+    	optional Mode gpsDataFormat = 36;
+
+	optional Mode setupCoilDelayOffset = 37;
+    	optional Mode accessUXOTab = 38;
+    	optional Mode setupUXODevice = 39;
+
+	optional Mode setupSensitivityValue = 40;
+    	optional Mode setupSensitivityLimits = 41;
+
+	optional Mode setupFerromagMetals = 42;
+
+	optional Mode accessToolsTab = 43;
+	optional Mode toolsBatteryType = 44;
+	optional Mode toolsBatteryThresholdWarning = 45;
+	optional Mode toolsSaveConfigUSB = 46;
+	optional Mode setupActiveModes = 47;
+	optional Mode setupLanguage = 48;
+	optional Mode setupPinPointMode = 49;
+	optional Mode toolsExportSyslog = 50;
+	optional Mode toolsResetSettings = 51;
+	optional Mode setupLedColorBehaviour = 52;
+    }
+
+    message Response {
+        required State state = 1;
+     	required Command command = 2;
+
+	optional string user = 3;
+    	optional Mode accessDeviceTab = 4;
+    	optional Mode accessSetupTab = 5;
+    	optional Mode accessGpsTab = 6;
+    	optional Mode accessFirmwareTab = 7;
+    	optional Mode accessAccessConfigTab = 8;
+    	optional Mode accessMetalDiscriminationTab = 9;
+
+    	optional Mode setupBluetooth = 21;
+    	optional Mode setupGps = 22;
+    	optional Mode setupLedBrightness = 23;
+    	optional Mode setupInfraredLedBrightness = 24;
+    	optional Mode setupInfraredLedBehaviour = 25;
+    	optional Mode setupHeadsetBehaviour = 26;
+    	optional Mode setupUsePairing = 27;
+    	optional Mode setupGpsHide = 28;
+	optional Mode setupMetalDiscrimination = 29;
+
+    	optional Mode gpsTrackDensity = 31;
+    	optional Mode gpsTraceDataDl = 32;
+    	optional Mode gpsTraceMarkerDl = 33;
+    	optional Mode gpsTraceAndMarkerDl = 34;
+    	optional Mode gpsClearData = 35;
+    	optional Mode gpsDataFormat = 36;
+
+	optional Mode setupCoilDelayOffset = 37;
+    	optional Mode accessUXOTab = 38;
+    	optional Mode setupUXODevice = 39;
+
+	optional Mode setupSensitivityValue = 40;
+    	optional Mode setupSensitivityLimits = 41;
+
+	optional Mode setupFerromagMetals = 42;
+
+	optional Mode accessToolsTab = 43;
+	optional Mode toolsBatteryType = 44;
+	optional Mode toolsBatteryThresholdWarning = 45;
+	optional Mode toolsSaveConfigUSB = 46;
+	optional Mode setupActiveModes = 47;
+	optional Mode setupLanguage = 48;
+	optional Mode setupPinPointMode = 49;
+	optional Mode toolsExportSyslog = 50;
+	optional Mode toolsResetSettings = 51;
+	optional Mode setupLedColorBehaviour = 52;
+   }
+}
+
+
+// -----------------------------------------------------------------------------
+message MetalDiscrimination
+{
+    enum State {
+        Success   = 1;
+        Failed    = 2;
+    }
+
+    enum Command {
+        Enable = 1;
+        Disable = 2;
+        Threshold = 3;
+        AddMetalType = 4;
+        RemoveMetalType = 5;
+        LoadMetalTypes = 6;
+        ResetMetalType = 7;
+        SetName = 8;
+        TrainState = 9;
+        Result = 10;
+        AddMetalTemplate = 11;
+        CancelMetalTemplate = 12;
+        LoadDisplaySlots = 13;
+        SetDisplaySlots = 14;
+        Configure = 15;
+    }
+
+    enum TemplateState {
+        Started = 0;
+        PlacingMetal = 1;
+        DetectorState = 2;
+        MetalSearching = 3;
+        TemplateRecording = 4;
+        TemplateResult = 5;
+        AddingNewTemplate = 6;
+        NoMetalFound = 7;
+        TemplateError = 8;
+        Aborted = 9;
+        Done = 10;
+        progress = 11;
+        NoSoilCompensation  = 12;
+        WrongMode           = 13;
+        MaxCapacity         = 14;
+    }
+
+    message MetalState {
+        required int32 id = 1;
+        required double error = 2;
+        required bool detected = 3;
+    }
+
+    message MetalType {
+        required int32 id = 1;
+        required string name = 2;
+        required int32 threshold = 3;
+    }
+
+    message DisplaySlot {
+        required int32 metal_id = 1;
+        required int32 display_idx = 2;
+    }
+
+    message Request {
+        required Command command = 1;
+
+        optional int32 id = 2;
+        optional int32 idx = 3;
+        optional int32 threshold = 4;
+        optional string name = 5;
+    }
+
+    message Response {
+        required Command command = 1;
+        required State state = 2;
+
+        optional int32 id = 3;
+        optional int32 idx = 4;
+        optional int32 threshold = 5;
+        repeated MetalState results = 6;
+        optional string name = 7;
+        optional int32 templateState = 8;
+        repeated string names = 9;
+        repeated int32 ids = 10;
+        repeated DisplaySlot display_slots = 11;
+        repeated MetalType types = 12;
+        optional int32 templateRecordingProgress = 13;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message IMUSensor
+{
+    enum Command {
+        SetAlgorithm     = 1;
+        SetAccelerometer = 2;
+        SetGyroscope     = 3;
+        SetMagnetometer  = 4;
+        Reset            = 5;
+        Get              = 6;
+    }
+
+    message Request {
+        required Command command = 1;
+        optional int32 algorithm = 2;  // 0 - Mahony, 1 - Madgwick
+        optional int32 range     = 3;  // for accelerometer or gyroscope depending on command
+        optional int32 bandwidth = 4;  // for accelerometer or gyroscope depending on command
+        optional int32 preset    = 5;  // for magnetometer only
+    }
+
+    message Response {
+        optional int32 algorithm      = 1;
+        optional int32 acc_range      = 2;
+        optional int32 acc_bandwidth  = 3;
+        optional int32 gyro_range     = 4;
+        optional int32 gyro_bandwidth = 5;
+        optional int32 magneto_preset = 6;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message IMURotationStream
+{
+    message Request {}
+
+    message Response {
+        optional float q0 = 1;
+        optional float q1 = 2;
+        optional float q2 = 3;
+        optional float q3 = 4;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message IMUDataStream
+{
+    message Request {}
+
+    message Response {
+        optional float accel_x = 1;
+        optional float accel_y = 2;
+        optional float accel_z = 3;
+        optional float gyro_x  = 4;
+        optional float gyro_y  = 5;
+        optional float gyro_z  = 6;
+        optional float magneto_x = 7;
+        optional float magneto_y = 8;
+        optional float magneto_z = 9;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message ProductionData
+{
+    message Request {}
+
+    message Response {
+        required string serialNumber    = 1;
+        required string deviceName      = 2;
+        required string productionDate  = 3;
+        required string orderNumber     = 4;
+        required string EOLTestDateTime = 5;
+        required string CoilID          = 6;
+        required string CoilSerial      = 7;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message PulseGenerator
+{
+    message Request {
+        optional int32 PulseDuration       = 1;
+        optional int32 PoffToDampOn        = 2;
+        optional int32 NoffToDampOn        = 3;
+        optional int32 PdamToAmpOn         = 4;
+        optional int32 NdamToAmpOn         = 5;
+        optional int32 FPGAPulsVoltage     = 6;
+        optional int32 FPGA_P_Delay        = 7;
+        optional int32 FPGA_N_Delay        = 8;
+        optional int32 TimingNumber        = 9;
+        optional int32 SoftwareVersion     = 10;
+        optional int32 Symmetry            = 11;
+    }
+
+    message Response {
+        required int32 PulseDuration       = 1;
+        required int32 PoffToDampOn        = 2;
+        required int32 NoffToDampOn        = 3;
+        required int32 PdamToAmpOn         = 4;
+        required int32 NdamToAmpOn         = 5;
+        required int32 FPGAPulsVoltage     = 6;
+        required int32 FPGA_P_Delay        = 7;
+        required int32 FPGA_N_Delay        = 8;
+        required int32 TimingNumber        = 9;
+        required int32 SoftwareVersion     = 10;
+        required int32 Symmetry            = 11;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message CoilCalibration
+{
+    enum Status {
+        Running  = 1;
+        Done     = 2;
+        Needed   = 3;
+    }
+
+    message Request {}
+
+    message Response {
+        required Status status  = 1;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message SensitivityConfiguration
+{
+    message Request {}
+
+    message Response {
+        required float sens_value       = 1;
+        required float sens_max         = 2;
+        required float sens_min         = 3;
+        required float sens_step        = 4;
+        optional bool use_sens_default  = 5;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message FactorySettings
+{
+    message Request
+    {
+        optional string DeviceType      = 1;
+        optional bool WLAN              = 2;
+        optional bool Bluetooth         = 3;
+        optional bool PinPointMode      = 4;
+    }
+
+    message Response {
+        optional string DeviceType      = 1;
+        optional bool WLAN              = 2;
+        optional bool Bluetooth         = 3;
+        optional bool PinPointMode      = 4;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message DiagnosticAdc
+{
+    enum RequestMode {
+        Subscribe   = 1;
+        Unsubscribe = 2;
+    }
+
+    message Request {
+        required RequestMode mode = 1;
+    }
+
+    message Response {
+        required float pulseMinusVoltage    = 1;
+        required float pulsePlusVoltage     = 2;
+        required float supplyVoltage3V3     = 3;
+        required float supplyVoltage5V4     = 4;
+        required float groundVoltage        = 5;
+        required float referenceVoltage3V0  = 6;
+        required float batteryCurrent       = 7;
+        required float batteryVoltage       = 8;
+        required uint32 batteryLoadMAX      = 9;
+        required uint32 batteryState        = 10;
+        required uint32 batteryLoadAVR      = 11;
+        required float batteryVoltageAVR    = 12;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message ExportConfig
+{
+    enum USBstate
+    {
+        USB_unmounted     = 1;
+        USB_is_mounting   = 2;
+        USB_is_unmounting = 3;
+        USB_mounted       = 4;
+        Mount_Timeout     = 5;
+        Unmount_Timeout   = 6;
+        Export_finished   = 7;
+        Export_failed     = 8;
+        USB_save_remove   = 9;
+    }
+
+    message Request { }
+
+    message Response
+    {
+        required USBstate state = 1 [default = USB_unmounted];
+    }
+}
+
+//-----------------------------------------------------------------------------
+message ExportSyslog
+{ 
+    enum State
+    {
+        Exporting         = 1;
+        Export_finished   = 2;
+        Export_failed     = 3;
+    }
+
+    message Request 
+    { }
+
+    message Response
+    {
+        required State state   = 1;
+        optional bytes zipfile = 2;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message BatteryConfig
+{
+    enum BattType
+    {
+        Default		    = 0;
+        Alkaline            = 1;
+        Zinc_Carbon         = 2;
+        Nickel_Cadmium      = 3;
+        Nickel_MetalHydride = 4;
+    }
+
+    message Request
+    {
+        optional BattType type            = 1;
+        optional uint32 threshold_warning = 2;
+    }
+
+    message Response
+    {
+        optional BattType type            = 1;
+        optional uint32 threshold_warning = 2;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message DetectorActiveModesConfig
+{
+    message Request {}
+
+    message Response
+    {
+        repeated bool Active             = 1;
+        repeated bool Modifiable         = 2;
+    }
+
+}
+
+//-----------------------------------------------------------------------------
+message ResetSettings
+{
+    message Request {}
+
+    message Response {
+        required bool allowed   = 1;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message DataServer
+{
+    message Request { }
+
+    message Response {
+        required bytes Seed  = 1;
+    }
+}
+
+//-----------------------------------------------------------------------------
+message LedColor
+{
+    enum LedColorOption {
+        Default             = 0;
+        Red                 = 1;
+    }
+
+    message Request {}
+
+    message Response {
+        required LedColorOption UXO                 = 1;
+        required LedColorOption Graphite            = 2;
+        required LedColorOption HighPower           = 3;
+        required LedColorOption MetalDiscrimination = 4;
+    }
+}

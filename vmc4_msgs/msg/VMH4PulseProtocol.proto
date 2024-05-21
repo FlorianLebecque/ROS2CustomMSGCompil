@@ -1,0 +1,128 @@
+//
+// https://developers.google.com/protocol-buffers/docs/overview
+//
+// Update C++ files: protoc *.proto --cpp_out=.
+//
+syntax = "proto2";
+
+option optimize_for=LITE_RUNTIME;
+
+package Vallon.VMx4;
+
+
+//////////////////////////////////////////////////////
+//
+// A message starts with a header (see Header in CommonProtocol.proto)
+// which specifies the message id (MessageId)
+// and the size of the payload (Message*)
+// The header is always 10 bytes long.
+
+enum MessageId {
+    MessageUnknownId                    = 10;
+    MessagePulsesId                     = 11;
+    MessageDiodeADC2TemperaturId        = 12;
+    MessageDebugDataId                  = 13;
+    MessagePulseGeneratorId             = 14;
+    MessageDebugDataRequestId           = 15;
+    MessageTemperaturId                 = 16;
+    MessageConfigFilesID                = 17;
+}
+
+
+message Pulse {
+    repeated sfixed32 pos       = 1;
+    repeated sfixed32 neg       = 2;
+    //    required fixed32 pos_status = 3;
+    //    required fixed32 neg_status = 4;
+}
+
+message MessagePulses {
+    repeated Pulse pulses = 1;
+}
+
+message MessageDiodeADC2Temperatur {
+    optional int32 Temperatur   = 1;
+}
+
+message MessageTemperatur {
+    required bool calibrate     = 1;
+    optional int32 Temperatur   = 2;
+    optional int32 offSet       = 3;
+}
+
+message DebugData {
+    repeated sfixed32 data      = 1;
+}
+
+message MessageDebugData {
+    repeated DebugData DebugData = 1;
+}
+
+message MessageDebugDataRequest {
+    required bool use            = 1;
+}
+
+message MessagePulseGenerator
+{
+    enum PGCmd {
+        cmd_PulseOn             = 1;
+        cmd_PulseDuration       = 2;
+        cmd_PoffToDampOn        = 3;
+        cmd_NoffToDampOn        = 4;
+        cmd_PdamToAmpOn         = 5;
+        cmd_NdamToAmpOn         = 6;
+        cmd_FPGAPulsVoltage     = 7;
+        cmd_FPGA_P_Delay        = 8;
+        cmd_FPGA_N_Delay        = 9;
+        cmd_CoilProperties      = 10;
+        cmd_TimNumber           = 11;
+        cmd_WireDetector_Freq   = 12;
+        cmd_Ack                 = 13;
+        cmd_All                 = 99;
+    }
+
+    message WireDetectorFreq {
+        required int32 id           = 1;
+        required int32 freq         = 2;
+    }
+
+    optional bool PulseOn              = 1;
+    optional int32 PulseDuration       = 2;
+    optional int32 PoffToDampOn        = 3;
+    optional int32 NoffToDampOn        = 4;
+    optional int32 PdamToAmpOn         = 5;
+    optional int32 NdamToAmpOn         = 6;
+    optional int32 FPGAPulsVoltage     = 7;
+    optional int32 FPGA_P_Delay        = 8;
+    optional int32 FPGA_N_Delay        = 9;
+    optional int32 id                  = 10;
+    optional int32 sn                  = 11;
+    optional int32 TestDate            = 12;
+    optional int32 TestTime            = 13;
+    optional int32 TimingNumber        = 14;  
+    optional WireDetectorFreq WDFreq   = 15;
+    optional bool Ack                  = 16;
+    required bool get                  = 17;
+    required PGCmd command             = 18;
+}
+
+message MessageConfigFiles
+{
+    enum files {
+        Settings            = 1;
+        ConfigCoil          = 2;
+        DeviceConfig        = 3;
+    }
+
+    enum types {
+        Array       = 1;
+        Simple      = 2;
+    }
+
+    required files File                 = 1;
+    required string Groupe              = 2;
+    required string Property            = 3;
+    required types PropertyType         = 4;
+    required string PropertyValue       = 5;
+    required int32 CoilId               = 6;
+}

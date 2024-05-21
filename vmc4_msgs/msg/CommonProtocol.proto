@@ -1,0 +1,96 @@
+//
+// https://developers.google.com/protocol-buffers/docs/overview
+//
+// Update C++ files: protoc CommonProtocol.proto --cpp_out=.
+//
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+
+//-----------------------------------------------------------------------------
+package VallonMessage;
+
+
+//-----------------------------------------------------------------------------
+enum VallonDefines {
+    ProtocolVersion = 4;        // Protocol version, increment if message structure is changed
+}
+
+//-----------------------------------------------------------------------------
+message Header
+{
+    // A message starts with this header which specifies the message id
+    // and the size of the message. The header is always 10 bytes long.
+
+    enum Id {
+        Unknown                     = 0;
+
+        // Basic system messages
+        HelloRequest                = 1;
+        HelloResponse               = 2;
+        HeartbeatRequest            = 3;
+        HeartbeatResponse           = 4;
+        MessageSubscriptionRequest  = 5;
+        MessageSubscriptionResponse = 6;
+    }
+
+    required fixed32 id   = 1;
+    required fixed32 size = 2;
+}
+
+
+//-----------------------------------------------------------------------------
+message Hello
+{
+    // First send a Hello request to the server.
+    // On success you get a Hello Reponse with Id=Ack
+    message Request {
+        required uint32 protocol_version = 1;
+    };
+
+    message Response {
+        enum Id {
+            Unknown              = 0;
+            Ack                  = 1;
+            Error                = 2;
+            ProtocolError        = 4;
+            MessageUnkown        = 5;
+        }
+
+        required sint64 timestamp = 2;
+        required Id id            = 3;
+        optional string message   = 4;
+        optional int32  integer   = 5;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+message Heartbeat
+{
+    message Request {}                      // will be send from client every X seconds
+    message Response {}                     // response in time signalize device is running
+}
+
+
+//-----------------------------------------------------------------------------
+message MessageSubscription
+{
+    enum Mode {
+        Subscribe    = 0;
+        Unsubscribe  = 1;
+        Single       = 2;
+    }
+
+    message Request {
+        required Mode mode    = 1;
+        required uint32 event = 2;
+    }
+
+    message Response {
+        required Mode mode    = 1;
+        required uint32 event = 2;
+    }
+}
+
